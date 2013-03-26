@@ -95,7 +95,7 @@ $(document).ready(function () {
         change: request_update
     });
     
-    var ws_url = 'ws' + document.location.origin.substring(4) + '/';
+    var ws_url = 'ws' + document.location.origin.substring(4);
     setTimeout(function() {
         kernel._kernel_started({kernel_id: '1', ws_url: ws_url});
     }, 500);

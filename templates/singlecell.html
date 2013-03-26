@@ -8,7 +8,7 @@
 	<meta name="author" content="Min RK">
   <link rel="stylesheet" href="{{static_url("jquery/css/themes/base/jquery-ui.min.css") }}" type="text/css" />
   <link rel="stylesheet" href="{{static_url("bootstrap/css/bootstrap.min.css")}}" media="screen">
-  <link rel="stylesheet" href="{{static_url("bootstrap/css/bootstrap-responsive.min.css")}}" 
+  <link rel="stylesheet" href="{{static_url("bootstrap/css/bootstrap-responsive.min.css")}}" media="screen">
   <link rel="stylesheet" href="{{static_url("ipython/css/boilerplate.css") }}" type="text/css" />
   <link rel="stylesheet" href="{{static_url("ipython/css/page.css") }}" type="text/css"/>
   <link rel="stylesheet" href="{{static_url("ipython/css/style.min.css") }}" type="text/css"/>
@@ -23,9 +23,10 @@
   <div class="navbar navbar-static-top">
     <div class="navbar-inner">
       <div class="container">
-        <a class="brand">
-          HOME
-        </a>
+        <ul class="nav">
+          <li><a href="/bessel">Bessel Functions</a></li>
+          <li><a href="/singlecell">Single Cell</a></li>
+        </ul>
         <ul class="nav pull-right">
           <li><a href="#" id="restart">Restart</a></li>
           <li><a href="#" id="interrupt">Interrupt</a></li>

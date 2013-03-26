@@ -6,19 +6,20 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>Just a Kernel</title>
 	<meta name="author" content="Min RK">
-  <link rel="stylesheet" href="{{ static_url("css/style.css") }}">
   <link rel="stylesheet" href="{{ static_url("jquery/css/themes/base/jquery-ui.min.css") }}">
   <link rel="stylesheet" href="{{static_url("bootstrap/css/bootstrap.min.css")}}" media="screen">
   <link rel="stylesheet" href="{{static_url("bootstrap/css/bootstrap-responsive.min.css")}}" media="screen">
+  <link rel="stylesheet" href="{{ static_url("css/style.css") }}">
   
 </head>
 <body>
   <div class="navbar navbar-static-top">
     <div class="navbar-inner">
       <div class="container">
-        <a class="brand">
-          HOME
-        </a>
+        <ul class="nav">
+          <li><a href="/bessel">Bessel Functions</a></li>
+          <li><a href="/singlecell">Single Cell</a></li>
+        </ul>
         <ul class="nav pull-right">
           <li><a href="#" id="restart">Restart</a></li>
           <li><a href="#" id="interrupt">Interrupt</a></li>

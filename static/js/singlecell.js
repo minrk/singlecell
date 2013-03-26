@@ -37,6 +37,8 @@ $(document).ready(function () {
     kernel._kernel_started({kernel_id: '1', ws_url: ws_url});
     var thecell = new IPython.CodeCell(kernel);
     $("div#thecell").append(thecell.element);
+    // focus the cell
+    thecell.select();
     
     $(document).keydown(function (event) {
         var key = IPython.utils.keycodes;
