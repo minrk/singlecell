@@ -1,0 +1,14 @@
+div#head{
+  text-align: center;
+}
+
+pre {
+  background: inherit;
+  margin: 0px;
+}
+div#thecell{
+    height: 2em;
+}
+div#theplot {
+  height: 300px;
+}
