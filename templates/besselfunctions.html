@@ -3,9 +3,9 @@
 
 <html lang="en">
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-	<title>Just a Kernel</title>
-	<meta name="author" content="Min RK">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <title>Bessel Functions</title>
+  <meta name="author" content="Min RK">
   <link rel="stylesheet" href="{{ static_url("jquery/css/themes/base/jquery-ui.min.css") }}">
   <link rel="stylesheet" href="{{static_url("bootstrap/css/bootstrap.min.css")}}" media="screen">
   <link rel="stylesheet" href="{{static_url("bootstrap/css/bootstrap-responsive.min.css")}}" media="screen">
@@ -39,6 +39,13 @@
     <div class="row">
       <div class="span8 offset2">
         <div id="theplot"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="span6 offset3">
+        <span id="n_label"></span><div id="n_slider"></div>
+        <span id="xmax_label"></span><div id="xmax_slider"></div>
+        <span id="npoints_label"></span><div id="npoints_slider"></div>
       </div>
     </div>
     <div class="row">
