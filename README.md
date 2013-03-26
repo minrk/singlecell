@@ -9,8 +9,8 @@ Start the app with
 
 The first is a single IPython code cell - this is the most complicated,
 with the most dependencies,
-because the CodeCell object is actually where most of the IPython Notebook's complexity lies
-- it brings in CodeMirror, completion, the tooltip, and other things, all of which are not optional.
+because the CodeCell object is actually where most of the IPython Notebook's complexity lies -
+it brings in CodeMirror, completion, the tooltip, and other things, all of which are not optional.
 Some of this needs to be cleaned up.
 
 The other demo is a plain webapp - no IPython input cell or anything,
