@@ -158,12 +158,34 @@ IPython.utils = (function (IPython) {
 
     //Map from terminal commands to CSS classes
     var ansi_colormap = {
-        "30":"ansiblack", "31":"ansired",
-        "32":"ansigreen", "33":"ansiyellow",
-        "34":"ansiblue", "35":"ansipurple","36":"ansicyan",
-        "37":"ansigrey", "01":"ansibold"
+        "01":"ansibold",
+        "30":"ansiblack",
+        "31":"ansired",
+        "32":"ansigreen",
+        "33":"ansiyellow",
+        "34":"ansiblue",
+        "35":"ansipurple",
+        "36":"ansicyan",
+        "37":"ansigrey"
     };
 
+    function ansispan(str) {
+        // ansispan function adapted from github.com/mmalecki/ansispan (MIT License)
+        Object.keys(ansi_colormap).forEach(function(ansi) {
+          var span = '<span class="' + ansi_colormap[ansi] + '">';
+
+          //
+          // `\033[Xm` == `\033[0;Xm` sets foreground color to `X`.
+          //
+          str = str.replace(
+              new RegExp('\033\\[([01];)?' + ansi + 'm', 'g'), span
+          );
+        });
+
+        str = str.replace(/\033\[([01]|39|22)?m/g, '</span>');
+        return str;
+      };
+    
     // Transform ANSI color escape codes into HTML <span> tags with css
     // classes listed in the above ansi_colormap object. The actual color used
     // are set in the css file.
@@ -174,18 +196,14 @@ IPython.utils = (function (IPython) {
         var cmds = [];
         var opener = "";
         var closer = "";
-        while (re.test(txt)) {
-            var cmds = txt.match(re)[1].split(";");
-            closer = opened?"</span>":"";
-            opened = cmds.length > 1 || cmds[0] != 0;
-            var rep = [];
-            for (var i in cmds)
-                if (typeof(ansi_colormap[cmds[i]]) != "undefined")
-                    rep.push(ansi_colormap[cmds[i]]);
-            opener = rep.length > 0?"<span class=\""+rep.join(" ")+"\">":"";
-            txt = txt.replace(re, closer + opener);
-        }
-        if (opened) txt += "</span>";
+
+        // Strip all ANSI codes that are not color related.  Matches
+        // all ANSI codes that do not end with "m".
+        var ignored_re = /(?=(\033\[[\d;=]*[a-ln-zA-Z]{1}))\1(?!m)/g;
+        txt = txt.replace(ignored_re, "");
+        
+        // color ansi codes
+        txt = ansispan(txt);
         return txt;
     }
 
@@ -201,22 +219,10 @@ IPython.utils = (function (IPython) {
         return txt;
     }
 
-    // Locate URLs in plain text and wrap them in spaces so that they can be
-    // better picked out by autoLinkUrls even after the text has been
-    // converted to HTML
-    function wrapUrls(txt) {
-        // Note this regexp is a modified version of one from
-        // Markdown.Converter For now it only supports http(s) and ftp URLs,
-        // but could easily support others (though file:// should maybe be
-        // avoided)
-        var url_re = /(^|\W)(https?|ftp)(:\/\/[-A-Z0-9+&@#\/%?=~_|\[\]\(\)!:,\.;]*[-A-Z0-9+&@#\/%=~_|\[\]])($|\W)/gi;
-        return txt.replace(url_re, "$1 $2$3 $4");
-    }
-
-    // Locate a URL with spaces around it and convert that to a anchor tag
+    // Locate any URLs and convert them to a anchor tag
     function autoLinkUrls(txt) {
-        return txt.replace(/ ((https?|ftp):[^'">\s]+) /gi,
-            "<a target=\"_blank\" href=\"$1\">$1</a>");
+        return txt.replace(/(^|\s)(https?|ftp)(:[^'">\s]+)/gi,
+            "$1<a target=\"_blank\" href=\"$2$3\">$2$3</a>");
     }
 
     grow = function(element) {
@@ -244,10 +250,13 @@ IPython.utils = (function (IPython) {
                 CTRL     : 17,
                 CONTROL  : 17,
                 ALT      : 18,
+                CAPS_LOCK: 20,
                 ESC      : 27,
                 SPACE    : 32,
                 PGUP     : 33,
                 PGDOWN   : 34,
+                END      : 35,
+                HOME     : 36,
                 LEFT_ARROW: 37,
                 LEFTARROW: 37,
                 LEFT     : 37,
@@ -260,6 +269,7 @@ IPython.utils = (function (IPython) {
                 DOWN_ARROW: 40,
                 DOWNARROW: 40,
                 DOWN     : 40,
+                COMMAND  : 91,
     };
 
 
@@ -289,7 +299,6 @@ IPython.utils = (function (IPython) {
         keycodes : keycodes,
         grow : grow,
         fixCarriageReturn : fixCarriageReturn,
-        wrapUrls : wrapUrls,
         autoLinkUrls : autoLinkUrls,
         points_to_pixels : points_to_pixels,
         browser : browser    

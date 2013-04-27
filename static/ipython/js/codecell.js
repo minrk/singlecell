@@ -62,7 +62,6 @@ var IPython = (function (IPython) {
      *      @param [options.cm_config] {object} config to pass to CodeMirror
      */
     var CodeCell = function (kernel, options) {
-        var options = options || {}
         this.kernel = kernel || null;
         this.code_mirror = null;
         this.input_prompt_number = null;
@@ -71,15 +70,10 @@ var IPython = (function (IPython) {
 
 
         var cm_overwrite_options  = {
-            extraKeys: {"Tab": "indentMore","Shift-Tab" : "indentLess",'Backspace':"delSpaceToPrevTabStop"},
             onKeyEvent: $.proxy(this.handle_codemirror_keyevent,this)
         };
 
-        var arg_cm_options = options.cm_options || {};
-        var cm_config = $.extend({},CodeCell.cm_default, arg_cm_options, cm_overwrite_options);
-
-        var options = {};
-        options.cm_config = cm_config;
+        options = this.mergeopt(CodeCell, options, {cm_config:cm_overwrite_options});
 
         IPython.Cell.apply(this,[options]);
 
@@ -89,10 +83,13 @@ var IPython = (function (IPython) {
         );
     };
 
-    CodeCell.cm_default = {
+    CodeCell.options_default = {
+        cm_config : {
+            extraKeys: {"Tab": "indentMore","Shift-Tab" : "indentLess",'Backspace':"delSpaceToPrevTabStop"},
             mode: 'python',
             theme: 'ipython',
             matchBrackets: true
+        }
     };
 
 
@@ -109,17 +106,18 @@ var IPython = (function (IPython) {
     CodeCell.prototype.create_element = function () {
         IPython.Cell.prototype.create_element.apply(this, arguments);
 
-        var cell =  $('<div></div>').addClass('cell border-box-sizing code_cell vbox');
+        var cell =  $('<div></div>').addClass('cell border-box-sizing code_cell');
         cell.attr('tabindex','2');
 
         this.celltoolbar = new IPython.CellToolbar(this);
 
-        var input = $('<div></div>').addClass('input hbox');
+        var input = $('<div></div>').addClass('input');
         var vbox = $('<div/>').addClass('vbox box-flex1')
         input.append($('<div/>').addClass('prompt input_prompt'));
         vbox.append(this.celltoolbar.element);
         var input_area = $('<div/>').addClass('input_area');
         this.code_mirror = CodeMirror(input_area.get(0), this.cm_config);
+        $(this.code_mirror.getInputField()).attr("spellcheck", "false");
         vbox.append(input_area);
         input.append(vbox);
         var output = $('<div></div>');
@@ -247,7 +245,8 @@ var IPython = (function (IPython) {
             'execute_reply': $.proxy(this._handle_execute_reply, this),
             'output': $.proxy(this.output_area.handle_output, this.output_area),
             'clear_output': $.proxy(this.output_area.handle_clear_output, this.output_area),
-            'set_next_input': $.proxy(this._handle_set_next_input, this)
+            'set_next_input': $.proxy(this._handle_set_next_input, this),
+            'input_request': $.proxy(this._handle_input_request, this)
         };
         var msg_id = this.kernel.execute(this.get_text(), callbacks, {silent: false});
     };
@@ -262,10 +261,23 @@ var IPython = (function (IPython) {
         $([IPython.events]).trigger('set_dirty.Notebook', {'value': true});
     }
 
+    /**
+     * @method _handle_set_next_input
+     * @private
+     */
     CodeCell.prototype._handle_set_next_input = function (text) {
         var data = {'cell': this, 'text': text}
         $([IPython.events]).trigger('set_next_input.Notebook', data);
     }
+    
+    /**
+     * @method _handle_input_request
+     * @private
+     */
+    CodeCell.prototype._handle_input_request = function (content) {
+        this.output_area.append_raw_input(content);
+    }
+
 
     // Basic cell manipulation.
 

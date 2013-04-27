@@ -240,7 +240,7 @@ var IPython = (function (IPython) {
 
 
     OutputArea.prototype.create_output_area = function () {
-        var oa = $("<div/>").addClass("hbox output_area");
+        var oa = $("<div/>").addClass("output_area");
         if (this.prompt_area) {
             oa.append($('<div/>').addClass('prompt'));
         }
@@ -325,7 +325,7 @@ var IPython = (function (IPython) {
         }
     };
 
-    OutputArea.display_order = ['javascript','html','latex','svg','png','jpeg','text'];
+    OutputArea.display_order = ['javascript','latex','svg','png','jpeg','text'];
 
     OutputArea.prototype.append_mime_type = function (json, element, dynamic) {
         for(var type_i in OutputArea.display_order){
@@ -345,7 +345,7 @@ var IPython = (function (IPython) {
 
 
     OutputArea.prototype.append_html = function (html, element) {
-        var toinsert = $("<div/>").addClass("box-flex1 output_subarea output_html rendered_html");
+        var toinsert = $("<div/>").addClass("output_subarea output_html rendered_html");
         toinsert.append(html);
         element.append(toinsert);
     };
@@ -353,7 +353,7 @@ var IPython = (function (IPython) {
 
     OutputArea.prototype.append_javascript = function (js, container) {
         // We just eval the JS code, element appears in the local scope.
-        var element = $("<div/>").addClass("box-flex1 output_subarea");
+        var element = $("<div/>").addClass("output_subarea");
         container.append(element);
         // Div for js shouldn't be drawn, as it will add empty height to the area.
         container.hide();
@@ -376,9 +376,8 @@ var IPython = (function (IPython) {
 
 
     OutputArea.prototype.append_text = function (data, element, extra_class) {
-        var toinsert = $("<div/>").addClass("box-flex1 output_subarea output_text");
+        var toinsert = $("<div/>").addClass("output_subarea output_text");
         // escape ANSI & HTML specials in plaintext:
-        data = utils.wrapUrls(data);
         data = utils.fixConsole(data);
         data = utils.fixCarriageReturn(data);
         data = utils.autoLinkUrls(data);
@@ -391,7 +390,7 @@ var IPython = (function (IPython) {
 
 
     OutputArea.prototype.append_svg = function (svg, element) {
-        var toinsert = $("<div/>").addClass("box-flex1 output_subarea output_svg");
+        var toinsert = $("<div/>").addClass("output_subarea output_svg");
         toinsert.append(svg);
         element.append(toinsert);
     };
@@ -425,7 +424,7 @@ var IPython = (function (IPython) {
 
 
     OutputArea.prototype.append_png = function (png, element) {
-        var toinsert = $("<div/>").addClass("box-flex1 output_subarea output_png");
+        var toinsert = $("<div/>").addClass("output_subarea output_png");
         var img = $("<img/>").attr('src','data:image/png;base64,'+png);
         this._dblclick_to_reset_size(img);
         toinsert.append(img);
@@ -434,7 +433,7 @@ var IPython = (function (IPython) {
 
 
     OutputArea.prototype.append_jpeg = function (jpeg, element) {
-        var toinsert = $("<div/>").addClass("box-flex1 output_subarea output_jpeg");
+        var toinsert = $("<div/>").addClass("output_subarea output_jpeg");
         var img = $("<img/>").attr('src','data:image/jpeg;base64,'+jpeg);
         this._dblclick_to_reset_size(img);
         toinsert.append(img);
@@ -445,10 +444,59 @@ var IPython = (function (IPython) {
     OutputArea.prototype.append_latex = function (latex, element) {
         // This method cannot do the typesetting because the latex first has to
         // be on the page.
-        var toinsert = $("<div/>").addClass("box-flex1 output_subarea output_latex");
+        var toinsert = $("<div/>").addClass("output_subarea output_latex");
         toinsert.append(latex);
         element.append(toinsert);
     };
+    
+    OutputArea.prototype.append_raw_input = function (content) {
+        var that = this;
+        this.expand();
+        this.flush_clear_timeout();
+        var area = this.create_output_area();
+
+        area.append(
+            $("<div/>")
+            .addClass("box-flex1 output_subarea raw_input")
+            .append(
+                $("<span/>")
+                .addClass("input_prompt")
+                .text(content.prompt)
+            )
+            .append(
+                $("<input/>")
+                .addClass("raw_input")
+                .attr('type', 'text')
+                .attr("size", 80)
+                .keydown(function (event, ui) {
+                    // make sure we submit on enter,
+                    // and don't re-execute the *cell* on shift-enter
+                    if (event.which === utils.keycodes.ENTER) {
+                        that._submit_raw_input();
+                        return false;
+                    }
+                })
+            )
+        );
+        this.element.append(area);
+        area.find("input.raw_input").focus();
+    }
+    OutputArea.prototype._submit_raw_input = function (evt) {
+        var container = this.element.find("div.raw_input");
+        var theprompt = container.find("span.input_prompt");
+        var theinput = container.find("input.raw_input");
+        var value = theinput.attr("value");
+        var content = {
+            output_type : 'stream',
+            name : 'stdout',
+            text : theprompt.text() + value + '\n'
+        }
+        // remove form container
+        container.parent().remove();
+        // replace with plaintext version in stdout
+        this.append_output(content, false);
+        $([IPython.events]).trigger('send_input_reply.Kernel', value);
+    }
 
 
     OutputArea.prototype.handle_clear_output = function (content) {
