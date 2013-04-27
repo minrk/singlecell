@@ -40,7 +40,7 @@ from IPython.kernel.multikernelmanager import MultiKernelManager
 
 from IPython.frontend.html.notebook.handlers import (
     KernelHandler, KernelActionHandler,
-    IOPubHandler, ShellHandler,
+    IOPubHandler, ShellHandler, StdinHandler,
 )
 from IPython.frontend.html.notebook.notebookapp import (
     _kernel_action_regex,
@@ -76,6 +76,7 @@ class WebApp(web.Application):
             (r"/kernels/%s/%s" % (_kernel_id_regex, _kernel_action_regex), KernelActionHandler),
             (r"/kernels/%s/iopub" % _kernel_id_regex, IOPubHandler),
             (r"/kernels/%s/shell" % _kernel_id_regex, ShellHandler),
+            (r"/kernels/%s/stdin" % _kernel_id_regex, StdinHandler),
         ]
 
         # Python < 2.6.5 doesn't accept unicode keys in f(**kwargs), and
