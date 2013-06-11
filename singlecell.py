@@ -38,11 +38,13 @@ except ImportError:
 # IPython
 from IPython.kernel.multikernelmanager import MultiKernelManager
 
-from IPython.frontend.html.notebook.handlers import (
+
+from IPython.frontend.html.notebook.services.kernels.handlers import ( #services/kernels/handlers.py
     KernelHandler, KernelActionHandler,
     IOPubHandler, ShellHandler, StdinHandler,
 )
-from IPython.frontend.html.notebook.notebookapp import (
+
+from IPython.frontend.html.notebook.services.kernels.handlers import (
     _kernel_action_regex,
 )
 
