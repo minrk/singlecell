@@ -39,12 +39,12 @@ except ImportError:
 from IPython.kernel.multikernelmanager import MultiKernelManager
 
 
-from IPython.frontend.html.notebook.services.kernels.handlers import ( #services/kernels/handlers.py
+from IPython.html.services.kernels.handlers import (
     KernelHandler, KernelActionHandler,
     IOPubHandler, ShellHandler, StdinHandler,
 )
 
-from IPython.frontend.html.notebook.services.kernels.handlers import (
+from IPython.html.services.kernels.handlers import (
     _kernel_action_regex,
 )
 
