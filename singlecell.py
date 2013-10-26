@@ -20,8 +20,20 @@ Authors:
 import logging
 import os
 
+from distutils.version import LooseVersion
+
+import IPython
+
+try:
+    if LooseVersion(IPython.__version__) < LooseVersion('1.0'):
+        raise ImportError("singlecell demo requires IPython ≥ 1.0, found %s" % IPython.__version__)
+except TypeError:
+    pass
+
 # Install the pyzmq ioloop. This has to be done before anything else from
 # tornado is imported.
+
+
 from zmq.eventloop import ioloop
 ioloop.install()
 

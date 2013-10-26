@@ -1,7 +1,7 @@
 # Simple webapps backed by an IPython Kernel
 
 There's some cleanup to be done on the IPython side,
-but this shows two simple apps backed by an IPython Kernel.
+but this shows two simple apps backed by an IPython Kernel (requires IPython ≥ 1.0).
 
 Start the app with
 
